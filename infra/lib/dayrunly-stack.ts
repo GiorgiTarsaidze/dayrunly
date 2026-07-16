@@ -25,14 +25,17 @@ export class DayrunlyStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'Agent', {
       functionName: 'dayrunly-agent',
       runtime: lambda.Runtime.PYTHON_3_13,
-      code: lambda.Code.fromAsset('../agent', { exclude: ['__pycache__'] }),
-      handler: 'handler.lambda_handler',
+      code: lambda.Code.fromAsset('..', {
+        exclude: ['.git', '.gitignore', '.venv', 'infra', 'tests', 'scripts', '*.md', '**/__pycache__'],
+      }),
+      handler: 'agent.handler.lambda_handler',
       timeout: cdk.Duration.minutes(5),
       memorySize: 256,
       environment: {
         AUDIT_TABLE: audit.tableName,
         RUNDOWNLY_TABLE,
         DRY_RUN: this.node.tryGetContext('dryRun') ? 'true' : 'false',
+        MODEL_ID: this.node.tryGetContext('modelId') ?? 'amazon.nova-lite-v1:0',
       },
       logGroup: new logs.LogGroup(this, 'AgentLogs', {
         logGroupName: '/aws/lambda/dayrunly-agent',
