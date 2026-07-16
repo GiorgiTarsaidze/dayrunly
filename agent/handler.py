@@ -57,6 +57,12 @@ def _fmt_slot(s, e):
     return f"{s.strftime('%H:%M')}–{e.strftime('%H:%M')}"
 
 
+def _merge_alerts(habit_alerts, model_alerts):
+    """The model tends to echo habit alerts back; keep only genuinely new ones."""
+    known = {a.casefold() for a in habit_alerts}
+    return habit_alerts + [a for a in model_alerts if a.casefold() not in known]
+
+
 def _morning(today, event):
     cfg, token, events = _gather(today)
     try:
@@ -135,7 +141,7 @@ def _morning(today, event):
         "summary": plan["summary"],
         "weather": wline,
         "agenda": _agenda(events),
-        "alerts": habit_alerts + plan["alerts"],
+        "alerts": _merge_alerts(habit_alerts, plan["alerts"]),
         "actions": actions,
         "rundown": r,
         "teaser": plan.get("teaser", ""),
@@ -175,7 +181,7 @@ def _evening(today):
         "summary": plan["summary"],
         "weather": wline,
         "agenda": _agenda(events),
-        "alerts": habit_alerts + plan["alerts"],
+        "alerts": _merge_alerts(habit_alerts, plan["alerts"]),
         "mode_note": "(fallback mode)" if status == "fallback" else "",
     }
     emailer.send(f"🌙 Tomorrow, previewed — {tomorrow.strftime('%b %d')}",
