@@ -59,7 +59,11 @@ def _fmt_slot(s, e):
 
 def _morning(today, event):
     cfg, token, events = _gather(today)
-    r = rundown.get_latest_rundown()
+    try:
+        r = rundown.get_latest_rundown()
+    except Exception:
+        log.exception("rundown fetch failed, continuing without it")
+        r = None
     try:
         wline = weather.forecast(today.isoformat())["line"]
     except Exception:
