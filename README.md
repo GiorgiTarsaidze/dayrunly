@@ -63,7 +63,7 @@ tests/     unit tests for the habit engine
 
 ## Deploy your own
 
-You need: an AWS account (Bedrock Nova access, an SES-verified email identity) and a Google Cloud project with the Calendar API enabled and an OAuth *Desktop app* client.
+You need: an AWS account (Bedrock Nova access, an SES-verified email identity) and Google Calendar API OAuth credentials (a *Desktop app* client ID — the helper script below turns it into a refresh token).
 
 ```bash
 # 1. Google refresh token (calendar scope only) -> SSM SecureStrings /dayrunly/google/*
